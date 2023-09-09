@@ -1,0 +1,69 @@
+const int leds[6]={8,9,10,11,12,13};
+const int Switch1 = A0;
+const int Switch2 = A1;
+int delayms = 200;
+int delayadd = 500;
+
+void setup() {
+  for (int i=0; i<=3; i++) {
+    pinMode(leds[i], OUTPUT);
+  }
+//second parameter as INPUTPULLUP will set initial data as 1 (ata)
+  pinMode(Switch1, INPUT); 
+  pinMode(Switch2, INPUT);
+}
+
+void runRight() {
+  for(int i=0; i<=5; i++) {
+    digitalWrite(leds[i], HIGH);
+    delay(200);
+    digitalWrite(leds[i], LOW);
+    }
+}
+
+void runLeft() {
+  for(int i=5; i>=0; i--) {
+    digitalWrite(leds[i], HIGH);
+    delay(200);
+    digitalWrite(leds[i], LOW);
+    }
+}
+
+void RLWID () {
+ for (int i = 0; i < 6; i++) {
+  digitalWrite(leds[i], HIGH);
+  delay(delayms + i * delayadd);
+  digitalWrite(leds[i], LOW);
+ }
+}
+
+void RtoLVV() {
+   for(int i=0; i<=5; i++) {
+    digitalWrite(leds[i], HIGH);
+    delay(200);
+    digitalWrite(leds[i], LOW);
+    }
+  for(int i=5; i>=0; i--) {
+    digitalWrite(leds[i], HIGH);
+    delay(200);
+    digitalWrite(leds[i], LOW);
+    }
+}
+
+void loop() {
+  int switch1 = digitalRead(Switch1);
+  int switch2 = digitalRead(Switch2);
+  
+  if(switch1 == 0 && switch2 ==0){  
+    runRight();
+  }
+  else if (switch1 == 0 && switch2 == 1 ) {
+    runLeft();
+  }
+  else if (switch1 == 1 && switch2 == 0 ) {
+    RLWID();
+  }
+  else if (switch1 == 1 && switch2 == 1 ) {
+    RtoLVV();
+  }
+}
