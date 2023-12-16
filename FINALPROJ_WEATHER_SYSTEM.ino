@@ -9,7 +9,8 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 const int lightsensor = A0; 
 int lightsensorValue = 0; 
 
-const int motorpin = 2;
+const int motorpin1 = 2;
+const int motorpin2 = 3;
 
 void setup() {
   Serial.begin(9600);
@@ -17,12 +18,14 @@ void setup() {
   lcd.init();
   lcd.clear();         
   lcd.backlight();
+  pinMode(motorpin1, OUTPUT);
+  pinMode(motorpin2, OUTPUT);
 }
 
 void loop() {
   delay(1000); // delay before measurement
 
-  float h = dht.readHumidity();
+  int h = dht.readHumidity();
   float t = dht.readTemperature(); //default: Celsius
 
   if (isnan(h) || isnan(t)) {
@@ -30,7 +33,7 @@ void loop() {
     return;
   }
 
-  Serial.print(F("Humid.: ")); //humidity
+  Serial.print(F("Humid: ")); //humidity
   Serial.print(h);
 
   Serial.print(F(" Temp: ")); //temp
@@ -39,35 +42,39 @@ void loop() {
   lightsensorValue = analogRead(lightsensor); //light
   Serial.print(" Light: ");
   Serial.println(lightsensorValue); 
-  delay(1000); 
 
- if (t>=30 && lightsensorValue >= 500){
-    Serial.println("MOTOR IS ON");
-    digitalWrite(motorpin, HIGH);
+ if (t>=28 && lightsensorValue >= 500){
+    Serial.print("ON ");
+    digitalWrite(motorpin1, HIGH);
+    digitalWrite(motorpin2, LOW);
   }
-  else if (t<30 && lightsensorValue < 500){
-    Serial.println("MOTOR IS OFF");
-    digitalWrite(motorpin, LOW);
+  else if (t<28 && lightsensorValue < 500){
+    Serial.print("OFF ");
+    digitalWrite(motorpin1, LOW);
+    digitalWrite(motorpin2, LOW);
   }
-  else if (t>=30 && lightsensorValue < 500){
-    Serial.println("MOTOR IS OFF");
-    digitalWrite(motorpin, LOW);
+  else if (t>=28 && lightsensorValue < 500){
+    Serial.print("OFF ");
+    digitalWrite(motorpin1, LOW);
+    digitalWrite(motorpin2, LOW);
   }
-   else if (t<30 && lightsensorValue >= 500){
-    Serial.println("MOTOR IS OFF");
-    digitalWrite(motorpin, LOW);
+   else if (t<28 && lightsensorValue >= 500){
+    Serial.print("OFF ");
+    digitalWrite(motorpin1, LOW);
+    digitalWrite(motorpin2, LOW);
   }
-  //using 20x4 lcd display
-  // lcd.setCursor(0,0);   
-  // lcd.print("Hum %    ");  
-  // lcd.print(h);
 
-  // lcd.setCursor(1,0);
-  // lcd.print("Temp F    ");   
-  // lcd.print(t);
+  lcd.setCursor(0,0);   
+  lcd.print("H:");  
+  lcd.print(h);
+  lcd.print("%");  
 
-  // lcd.setCursor(2,0);   
-  // lcd.print("Bright    ");
-  // lcd.print(lightsensorValue);
+  lcd.setCursor(7,0);
+  lcd.print("T:");   
+  lcd.print(t);
+    lcd.print("C");  
+
+  lcd.setCursor(0,1);   
+  lcd.print("L:");
+  lcd.print(lightsensorValue);
 }
-
